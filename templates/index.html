@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🎤Automated Threat Detection</h1>
+
+        <!-- Upload & Record Section -->
+        <div class="card">
+            <h2>Upload or Record</h2>
+            <label for="audioFile" class="file-upload">📂 Click to Upload Audio</label>
+            <input type="file" id="audioFile" accept="audio/*" hidden>
+            <button onclick="uploadAudio()">Upload & Transcribe</button>
+
+            <button id="recordBtn">🎙 Start Recording</button>
+            <button id="stopBtn" disabled>⏹ Stop Recording</button>
+
+            <audio id="audioPlayer" controls></audio>
+        </div>
+
+        <!-- Transcription Output -->
+        <div class="card">
+            <h2>📝 Transcription</h2>
+            <div id="transcription" class="transcription-box">
+                Your transcribed text will appear here...
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

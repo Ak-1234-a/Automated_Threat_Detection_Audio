@@ -1,0 +1,119 @@
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+/* General Styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+    background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    padding: 20px;
+}
+
+/* Main Container */
+.container {
+    width: 90%;
+    max-width: 500px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 30px;
+    border-radius: 12px;
+    transition: transform 0.2s ease-in-out;
+}
+
+
+
+/* Headings */
+h1 {
+    font-weight: 600;
+    color: #00c6ff;
+}
+
+/* Card Structure */
+.card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 15px 0;
+}
+
+/* Buttons */
+button {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    margin: 12px 0;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    background: linear-gradient(135deg, #007bff, #00c6ff);
+    color: white;
+    font-weight: bold;
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+button:disabled {
+    background: #444;
+    cursor: not-allowed;
+}
+
+/* File Upload Box */
+.file-upload {
+    display: block;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.file-upload:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Transcription Output */
+.transcription-box {
+    width: 100%;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 6px;
+    margin-top: 10px;
+    font-size: 16px;
+    line-height: 1.5;
+    text-align: left;
+}
+
+/* Audio Player */
+audio {
+    width: 100%;
+    margin-top: 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .container {
+        width: 95%;
+        padding: 20px;
+    }
+}
