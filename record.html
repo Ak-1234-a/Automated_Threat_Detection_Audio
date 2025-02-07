@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Record Audio</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Voice Recording</h1>
+        <button id="startRecord" class="pulse">🎤 Tap to Record</button>
+        <button id="stopRecord" disabled>⏹ Stop</button>
+        <audio id="audioPlayback" controls></audio>
+        <canvas id="waveform"></canvas>
+        <button onclick="location.href='index.html'">🔙 Back</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
