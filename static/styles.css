@@ -15,10 +15,9 @@ body {
     color: white;
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
-    flex-direction: column;
     padding: 20px;
+    min-height: 100vh; /* ✅ Ensure scrolling if content overflows */
+    overflow-y: auto;  /* ✅ Enable vertical scrolling */
 }
 
 /* Main Container */
@@ -31,6 +30,7 @@ body {
     padding: 30px;
     border-radius: 12px;
     transition: transform 0.2s ease-in-out;
+    margin-bottom: 20px; /* ✅ Ensure spacing to avoid cutoff */
 }
 
 

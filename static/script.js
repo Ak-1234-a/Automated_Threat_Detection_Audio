@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 📤 Upload Audio File (Fixes uploadAudio is not defined error)
+    // 📤 Upload Audio File
     async function uploadAudio(file, filename) {
         if (!file) {
             alert("Please select an audio file to upload.");
@@ -72,7 +72,13 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             const result = await response.json();
-            transcriptionBox.innerText = result.transcription || "Transcription failed.";
+
+            if (result.transcription) {
+                // Display full transcription
+                transcriptionBox.innerHTML = `<p>${result.transcription}</p>`;
+            } else {
+                transcriptionBox.innerText = "Transcription failed.";
+            }
         } catch (error) {
             console.error("Error during upload:", error);
             transcriptionBox.innerText = "Error processing the audio.";
