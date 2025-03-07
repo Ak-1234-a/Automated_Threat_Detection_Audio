@@ -10,7 +10,7 @@ Privacy Controls: Ensure secure handling of user data
 
 **How To run**
 
-pip install -r requirement.txt
-python app.py
+1) pip install -r requirement.txt   
+2) python app.py
 
 Run The above two commands and record or upload your audio and see the desired o/p
