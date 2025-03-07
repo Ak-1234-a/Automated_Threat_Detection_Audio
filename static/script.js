@@ -18,9 +18,15 @@ document.addEventListener("DOMContentLoaded", () => {
         recordBtn.addEventListener("click", async () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
-
+                
+                // ✅ Handle Safari & older browser issues with mimeType fallback
+                const options = MediaRecorder.isTypeSupported("audio/webm") 
+                    ? { mimeType: "audio/webm" } 
+                    : {};
+                    
+                mediaRecorder = new MediaRecorder(stream, options);
                 audioChunks = [];
+
                 mediaRecorder.ondataavailable = (event) => {
                     audioChunks.push(event.data);
                 };
@@ -42,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 recordBtn.disabled = true;
                 recordBtn.innerText = "Recording... 🎙️"; // ✅ Update UI
             } catch (error) {
-                alert("Error accessing the microphone.");
+                alert("Error accessing the microphone. Please check your permissions.");
                 console.error("Microphone error:", error);
             }
         });
@@ -69,9 +75,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const formData = new FormData();
         formData.append("file", file, filename);
 
-        // ✅ Show processing message
+        // ✅ Show processing message & disable UI elements
         transcriptionBox.innerText = "Processing... ⏳";
         threatBox.innerText = "";
+        recordBtn.disabled = true;
+        stopBtn.disabled = true;
+        audioFileInput.disabled = true;
 
         try {
             const response = await fetch("/transcribe", {
@@ -87,11 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 threatBox.innerHTML = `<strong>Status: ${result.threat_status}</strong>`;
 
                 // ✅ Change color based on threat status
-                if (result.threat_status === "Threatening") {
-                    threatBox.style.color = "red";
-                } else {
-                    threatBox.style.color = "green";
-                }
+                threatBox.style.color = result.threat_status === "Threatening" ? "red" : "green";
             } else {
                 transcriptionBox.innerText = "Transcription failed.";
                 threatBox.innerText = "";
@@ -100,6 +105,10 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Error during upload:", error);
             transcriptionBox.innerText = "Error processing the audio.";
             threatBox.innerText = "";
+        } finally {
+            // ✅ Re-enable UI elements after processing
+            recordBtn.disabled = false;
+            audioFileInput.disabled = false;
         }
     }
 
@@ -110,6 +119,10 @@ document.addEventListener("DOMContentLoaded", () => {
             if (file) {
                 const audioURL = URL.createObjectURL(file);
                 audioPlayer.src = audioURL;
+
+                // ✅ Reset UI before processing
+                transcriptionBox.innerText = "Processing... ⏳";
+                threatBox.innerText = "";
 
                 // Upload & Transcribe
                 await uploadAudio(file, file.name);

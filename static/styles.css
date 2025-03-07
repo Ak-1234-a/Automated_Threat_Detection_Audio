@@ -15,8 +15,9 @@ body {
     color: white;
     display: flex;
     justify-content: center;
+    align-items: center; /* ✅ Ensure vertical centering */
     padding: 20px;
-    min-height: 100vh; /* ✅ Ensure scrolling if content overflows */
+    min-height: 100vh; /* ✅ Prevent cutoff */
     overflow-y: auto;  /* ✅ Enable vertical scrolling */
 }
 
@@ -25,25 +26,25 @@ body {
     width: 90%;
     max-width: 500px;
     background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px); /* ✅ Slightly stronger blur for depth */
+    -webkit-backdrop-filter: blur(12px);
     padding: 30px;
     border-radius: 12px;
     transition: transform 0.2s ease-in-out;
     margin-bottom: 20px; /* ✅ Ensure spacing to avoid cutoff */
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2); /* ✅ Slight shadow for better visibility */
 }
-
-
 
 /* Headings */
 h1 {
     font-weight: 600;
     color: #00c6ff;
+    font-size: 24px;
 }
 
 /* Card Structure */
 .card {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.12);
     padding: 20px;
     border-radius: 10px;
     margin: 15px 0;
@@ -59,14 +60,15 @@ button {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: 0.3s;
+    transition: transform 0.2s, background 0.3s;
     background: linear-gradient(135deg, #007bff, #00c6ff);
     color: white;
     font-weight: bold;
 }
 
 button:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    background: linear-gradient(135deg, #005bb5, #009fd4); /* ✅ Slightly darker on hover */
 }
 
 button:disabled {
@@ -78,28 +80,31 @@ button:disabled {
 .file-upload {
     display: block;
     padding: 15px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.12);
     border-radius: 8px;
     cursor: pointer;
     text-align: center;
-    transition: 0.3s;
+    transition: background 0.3s, transform 0.2s;
+    font-weight: 500;
 }
 
 .file-upload:hover {
     background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.02); /* ✅ Slight hover effect */
 }
 
 /* Transcription Output */
 .transcription-box {
     width: 100%;
     padding: 15px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.12);
     color: white;
     border-radius: 6px;
     margin-top: 10px;
     font-size: 16px;
     line-height: 1.5;
     text-align: left;
+    word-wrap: break-word; /* ✅ Prevent overflow for long text */
 }
 
 /* Audio Player */
@@ -107,7 +112,8 @@ audio {
     width: 100%;
     margin-top: 10px;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.12);
+    padding: 5px; /* ✅ Added slight padding for spacing */
 }
 
 /* Responsive Design */
@@ -115,5 +121,18 @@ audio {
     .container {
         width: 95%;
         padding: 20px;
+    }
+
+    button {
+        font-size: 16px;
+        padding: 12px;
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    .file-upload {
+        padding: 12px;
     }
 }

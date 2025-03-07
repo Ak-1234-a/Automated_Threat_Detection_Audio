@@ -1,31 +1,28 @@
 import pandas as pd
 import numpy as np
 import re
-import joblib
-from sklearn.model_selection import train_test_split
+from imblearn.over_sampling import SMOTE
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import Pipeline
-from sklearn.metrics import accuracy_score, classification_report
-from sklearn.utils.class_weight import compute_class_weight
 
 # Load dataset
-data = pd.read_csv("TEL Corpus --  Spreadsheet version.csv")
+file_path = "TEL Corpus --  Spreadsheet version.csv"
+data = pd.read_csv(file_path)
 
 # Normalize column names
 data.columns = data.columns.str.strip().str.lower()
 
-# Ensure correct column names
+# Ensure required columns exist
 if 'text' not in data.columns or 'label' not in data.columns:
-    raise KeyError("Dataset must contain 'text' and 'label' columns. Found: " + str(data.columns))
+    raise KeyError("Dataset must contain 'text' and 'label' columns.")
 
-# Drop missing values
-data = data[['text', 'label']].dropna()
+# Drop missing values and duplicates
+data = data[['text', 'label']].dropna().drop_duplicates()
 
 # Preprocess text
 def preprocess_text(text):
-    text = text.lower()
+    text = text.lower().strip()
     text = re.sub(r'[^a-zA-Z0-9\s]', '', text)  # Remove special characters
+    text = re.sub(r'\s+', ' ', text)  # Remove extra spaces
     return text
 
 data['text'] = data['text'].apply(preprocess_text)
@@ -34,31 +31,37 @@ data['text'] = data['text'].apply(preprocess_text)
 label_mapping = {"Safe": 0, "Threat": 1, "Offensive": 2}
 data['label'] = data['label'].map(label_mapping)
 
-# Drop any rows where mapping failed
+# Drop any unmapped rows
 data = data.dropna()
 data['label'] = data['label'].astype(int)
 
-# Split dataset
-X_train, X_test, y_train, y_test = train_test_split(data['text'], data['label'], test_size=0.2, random_state=42)
+# Show class distribution before balancing
+print("Before Balancing:")
+print(data['label'].value_counts())
 
-# Compute class weights to handle imbalance
-class_weights = compute_class_weight(class_weight='balanced', classes=np.unique(y_train), y=y_train)
-class_weight_dict = {i: class_weights[i] for i in range(len(class_weights))}
+# Convert text to numerical features using TF-IDF (SMOTE works on numeric data)
+vectorizer = TfidfVectorizer(max_features=5000, ngram_range=(1,2), stop_words='english')
+X_tfidf = vectorizer.fit_transform(data['text'])
+y = data['label'].values
 
-# Create a pipeline with TF-IDF and Logistic Regression
-model_pipeline = Pipeline([
-    ('tfidf', TfidfVectorizer(ngram_range=(1,2), max_features=5000, stop_words='english')),
-    ('classifier', LogisticRegression(class_weight='balanced'))
-])
+# Balance dataset using SMOTE
+smote = SMOTE(random_state=42)
+X_resampled, y_resampled = smote.fit_resample(X_tfidf, y)
 
-# Train model
-model_pipeline.fit(X_train, y_train)
+# Convert back to DataFrame
+balanced_texts = vectorizer.inverse_transform(X_resampled)
+balanced_data = pd.DataFrame({'text': [' '.join(words) for words in balanced_texts], 'label': y_resampled})
 
-# Evaluate model
-y_pred = model_pipeline.predict(X_test)
-print("Accuracy:", accuracy_score(y_test, y_pred))
-print(classification_report(y_test, y_pred, zero_division=0))
+# Convert labels back to original categories
+inverse_label_mapping = {0: "Safe", 1: "Threat", 2: "Offensive"}
+balanced_data['label'] = balanced_data['label'].map(inverse_label_mapping)
 
-# Save model
-joblib.dump(model_pipeline, "threat_model.pkl")
-print("Model saved as 'threat_model.pkl'")
+# Show class distribution after balancing
+print("After Balancing:")
+print(balanced_data['label'].value_counts())
+
+# Save updated dataset
+updated_file_path = "TEL_Corpus_Updated.csv"
+balanced_data.to_csv(updated_file_path, index=False)
+
+print(f"✅ Updated dataset saved as {updated_file_path}")
