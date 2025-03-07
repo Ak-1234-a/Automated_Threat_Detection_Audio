@@ -3,35 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Analysis</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Audio Threat Detection</title>
 </head>
 <body>
-    <div class="container">
-        <h1>🎤 Automated Threat Detection</h1>
+    <h2>Upload an Audio File</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="audioFile" name="file" required>
+        <button type="submit">Upload & Analyze</button>
+    </form>
 
-        <!-- Upload & Record Section -->
-        <div class="card">
-            <h2>Upload or Record</h2>
-            <label for="audioFile" class="file-upload">📂 Click to Upload Audio</label>
-            <input type="file" id="audioFile" accept="audio/*" hidden>
-            <button onclick="uploadAudio()">Upload & Transcribe</button>
+    <h3>Transcription:</h3>
+    <p id="transcription"></p>
 
-            <button id="recordBtn">🎙 Start Recording</button>
-            <button id="stopBtn" disabled>⏹ Stop Recording</button>
+    <h3>Threat Status:</h3>
+    <p id="threatStatus"></p>
 
-            <audio id="audioPlayer" controls></audio>
-        </div>
+    <script>
+        document.getElementById("uploadForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let formData = new FormData();
+            let fileInput = document.getElementById("audioFile");
+            formData.append("file", fileInput.files[0]);
 
-        <!-- Transcription Output -->
-        <div class="card">
-            <h2>📝 Transcription</h2>
-            <div id="transcription" class="transcription-box">
-                Your transcribed text will appear here...
-            </div>
-        </div>
-    </div>
-
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+            fetch("/transcribe", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("transcription").innerText = data.transcription || "Error in transcription";
+                document.getElementById("threatStatus").innerText = data.threat_status || "Error in threat detection";
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    </script>
 </body>
 </html>
