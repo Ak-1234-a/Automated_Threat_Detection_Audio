@@ -4,132 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audio Threat Detection</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-            background: #121212;
-            color: white;
-        }
-
-        .container {
-            max-width: 500px;
-            margin: auto;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-
-        button {
-            padding: 10px 15px;
-            font-size: 16px;
-            background: #00c6ff;
-            border: none;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            background: #009ad6;
-        }
-
-        button:disabled {
-            background: #444;
-            cursor: not-allowed;
-        }
-
-        audio {
-            width: 100%;
-            margin-top: 15px;
-        }
-
-        .output-box {
-            margin-top: 15px;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            text-align: left;
-            word-wrap: break-word;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-
     <div class="container">
-        <h2>Upload an Audio File</h2>
-
+        <h1>🔊 Audio Threat Detection</h1>
+        <p>Upload an audio file to analyze its content and determine if it contains any threats.</p>
+        
         <form id="uploadForm" enctype="multipart/form-data">
-            <input type="file" id="audioFile" name="file" accept="audio/*" required>
-            <button type="submit" id="uploadBtn">Upload & Analyze</button>
+            <label for="audioFile" class="file-label">🎵 Select an Audio File</label>
+            <input type="file" id="audioFile" name="file" accept="audio/*" required class="custom-file-input">
+            <button type="submit" id="uploadBtn" class="upload-btn">🚀 Upload & Analyze</button>
         </form>
-
+        
         <audio id="audioPlayer" controls></audio>
-
-        <div class="output-box">
-            <h3>Transcription:</h3>
-            <p id="transcription">Awaiting transcription...</p>
-        </div>
-
-        <div class="output-box">
-            <h3>Threat Status:</h3>
-            <p id="threatStatus">Awaiting analysis...</p>
+        
+        <div class="output-container">
+            <div class="output-box">
+                <h3>📝 Transcription:</h3>
+                <p id="transcription">Awaiting transcription...</p>
+            </div>
+            <div class="output-box">
+                <h3>⚠️ Threat Status:</h3>
+                <p id="threatStatus">Awaiting analysis...</p>
+            </div>
         </div>
     </div>
-
-    <script>
-        document.getElementById("uploadForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            
-            let fileInput = document.getElementById("audioFile");
-            let transcriptionBox = document.getElementById("transcription");
-            let threatBox = document.getElementById("threatStatus");
-            let uploadBtn = document.getElementById("uploadBtn");
-            let audioPlayer = document.getElementById("audioPlayer");
-
-            if (!fileInput.files.length) {
-                alert("Please select an audio file.");
-                return;
-            }
-
-            let formData = new FormData();
-            formData.append("file", fileInput.files[0]);
-
-            // Reset UI
-            transcriptionBox.innerText = "Processing...";
-            threatBox.innerText = "Processing...";
-            uploadBtn.disabled = true;
-
-            // Play the uploaded audio
-            let audioURL = URL.createObjectURL(fileInput.files[0]);
-            audioPlayer.src = audioURL;
-            audioPlayer.load();
-
-            fetch("/transcribe", {
-                method: "POST",
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                transcriptionBox.innerText = data.transcription || "Error in transcription";
-                threatBox.innerText = data.threat_status || "Error in threat detection";
-
-                // Change color based on threat status
-                threatBox.style.color = data.threat_status === "Threatening" ? "red" : "green";
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                transcriptionBox.innerText = "Error processing audio.";
-                threatBox.innerText = "Error analyzing threat.";
-            })
-            .finally(() => {
-                uploadBtn.disabled = false; // Re-enable button
-            });
-        });
-    </script>
-
+    
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

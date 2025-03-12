@@ -1,74 +1,41 @@
-/* Import Google Font */
+/* styles.css (Updated with Recording Button Styles) */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
-/* General Styling */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
 
 body {
     font-family: 'Poppins', sans-serif;
     text-align: center;
-    background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+    background: #121212;
     color: white;
     display: flex;
     justify-content: center;
-    align-items: center; /* ✅ Ensure vertical centering */
-    padding: 20px;
-    min-height: 100vh; /* ✅ Prevent cutoff */
-    overflow-y: auto;  /* ✅ Enable vertical scrolling */
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
 }
 
-/* Main Container */
 .container {
     width: 90%;
     max-width: 500px;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(12px); /* ✅ Slightly stronger blur for depth */
-    -webkit-backdrop-filter: blur(12px);
-    padding: 30px;
-    border-radius: 12px;
-    transition: transform 0.2s ease-in-out;
-    margin-bottom: 20px; /* ✅ Ensure spacing to avoid cutoff */
-    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2); /* ✅ Slight shadow for better visibility */
-}
-
-/* Headings */
-h1 {
-    font-weight: 600;
-    color: #00c6ff;
-    font-size: 24px;
-}
-
-/* Card Structure */
-.card {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.1);
     padding: 20px;
     border-radius: 10px;
-    margin: 15px 0;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Buttons */
 button {
-    display: block;
-    width: 100%;
-    padding: 14px;
-    margin: 12px 0;
-    font-size: 18px;
+    padding: 10px 15px;
+    font-size: 16px;
+    background: #00c6ff;
     border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.2s, background 0.3s;
-    background: linear-gradient(135deg, #007bff, #00c6ff);
     color: white;
-    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.3s;
 }
 
 button:hover {
-    transform: translateY(-3px);
-    background: linear-gradient(135deg, #005bb5, #009fd4); /* ✅ Slightly darker on hover */
+    background: #009ad6;
 }
 
 button:disabled {
@@ -76,63 +43,24 @@ button:disabled {
     cursor: not-allowed;
 }
 
-/* File Upload Box */
-.file-upload {
-    display: block;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.12);
-    border-radius: 8px;
-    cursor: pointer;
-    text-align: center;
-    transition: background 0.3s, transform 0.2s;
-    font-weight: 500;
-}
-
-.file-upload:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.02); /* ✅ Slight hover effect */
-}
-
-/* Transcription Output */
-.transcription-box {
-    width: 100%;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.12);
-    color: white;
-    border-radius: 6px;
-    margin-top: 10px;
-    font-size: 16px;
-    line-height: 1.5;
-    text-align: left;
-    word-wrap: break-word; /* ✅ Prevent overflow for long text */
-}
-
-/* Audio Player */
 audio {
     width: 100%;
-    margin-top: 10px;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.12);
-    padding: 5px; /* ✅ Added slight padding for spacing */
+    margin-top: 15px;
 }
 
-/* Responsive Design */
-@media (max-width: 600px) {
-    .container {
-        width: 95%;
-        padding: 20px;
-    }
+.output-box {
+    margin-top: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    text-align: left;
+    word-wrap: break-word;
+}
 
-    button {
-        font-size: 16px;
-        padding: 12px;
-    }
+#recordBtn {
+    background: red;
+}
 
-    h1 {
-        font-size: 22px;
-    }
-
-    .file-upload {
-        padding: 12px;
-    }
+#stopBtn {
+    background: green;
 }
