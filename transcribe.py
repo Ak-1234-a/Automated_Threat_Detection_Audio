@@ -1,4 +1,4 @@
-# transcribe.py (Updated with Email Notification and Location Tracking)
+# transcribe.py (Updated with Twilio Phone Call)
 from flask import Flask, request, jsonify
 from pydub import AudioSegment
 import speech_recognition as sr
@@ -10,15 +10,22 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import requests
 import datetime
+from twilio.rest import Client
 
 app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+# Twilio Configuration
+TWILIO_ACCOUNT_SID = "AC5d09d85a14857f6bc52883ec1e9006f0"
+TWILIO_AUTH_TOKEN = "a1989c7b8fd3b29ebcf7722739f73bb9"
+TWILIO_PHONE_NUMBER = "+19787230533"  # Replace with your Twilio phone number
+ALERT_PHONE_NUMBER = "+919489229563"  # Replace with the recipient's phone number
+
 # Email Configuration
-EMAIL_SENDER = "aruncse60@gmail.com"  # Replace with your email
-EMAIL_PASSWORD = "qbmx cdsb zmgd yxxh"  # Replace with your password
-EMAIL_RECEIVER = "aruncse60@gmail.com"  # Replace with the recipient email
+EMAIL_SENDER = "aruncse60@gmail.com"  
+EMAIL_PASSWORD = "qbmx cdsb zmgd yxxh"  
+EMAIL_RECEIVER = "vigneshwarlalvigneshwarlal9@gmail.com"
 
 def get_location():
     """Fetch the user's location based on their IP address."""
@@ -55,7 +62,7 @@ def send_email(transcription):
     msg.attach(MIMEText(body, "plain"))
 
     try:
-        server = smtplib.SMTP("smtp.gmail.com", 587)  # Use SMTP server of your email provider
+        server = smtplib.SMTP("smtp.gmail.com", 587)  
         server.starttls()
         server.login(EMAIL_SENDER, EMAIL_PASSWORD)
         server.sendmail(EMAIL_SENDER, EMAIL_RECEIVER, msg.as_string())
@@ -63,6 +70,27 @@ def send_email(transcription):
         print("✅ Email sent successfully.")
     except Exception as e:
         print(f"❌ Error sending email: {e}")
+
+def make_twilio_call(transcription):
+    """Make a phone call and read out the threatening message using Twilio."""
+    try:
+        client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+
+        # Ensure the message is properly formatted
+        message_text = f"Alert! A threatening message was detected. The message says: {transcription}. Please take immediate action."
+
+        call = client.calls.create(
+            twiml=f"""<?xml version="1.0" encoding="UTF-8"?>
+                      <Response>
+                          <Say voice="alice">{message_text}</Say>
+                      </Response>""",
+            from_=TWILIO_PHONE_NUMBER,
+            to=ALERT_PHONE_NUMBER
+        )
+
+        print(f"📞 Call initiated. Call SID: {call.sid}")
+    except Exception as e:
+        print(f"❌ Error making Twilio call: {e}")
 
 def convert_to_wav(audio_path, wav_path):
     """Convert MP3/WebM audio file to WAV."""
@@ -103,7 +131,8 @@ def predict_threat(text):
         prediction = model.predict(text_vectorized)[0]
         
         if prediction == "Threat":
-            send_email(text)  # Send email if threat detected
+            send_email(text)  # Send email alert
+            make_twilio_call(text)  # Make a phone call
             return "Threatening"
         return "Non-Threatening"
     except Exception as e:
