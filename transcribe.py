@@ -1,15 +1,68 @@
-# transcribe.py (Updated Speech-to-text processing)
+# transcribe.py (Updated with Email Notification and Location Tracking)
 from flask import Flask, request, jsonify
 from pydub import AudioSegment
 import speech_recognition as sr
 import os
 import joblib
 import re
-import uuid
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import requests
+import datetime
 
 app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# Email Configuration
+EMAIL_SENDER = "aruncse60@gmail.com"  # Replace with your email
+EMAIL_PASSWORD = "qbmx cdsb zmgd yxxh"  # Replace with your password
+EMAIL_RECEIVER = "aruncse60@gmail.com"  # Replace with the recipient email
+
+def get_location():
+    """Fetch the user's location based on their IP address."""
+    try:
+        response = requests.get("https://ipinfo.io/json")
+        data = response.json()
+        ip = data.get("ip", "Unknown IP")
+        city = data.get("city", "Unknown City")
+        region = data.get("region", "Unknown Region")
+        country = data.get("country", "Unknown Country")
+        isp = data.get("org", "Unknown ISP")
+        return f"IP: {ip}\nLocation: {city}, {region}, {country}\nISP: {isp}"
+    except Exception as e:
+        return f"Error fetching location: {e}"
+
+def send_email(transcription):
+    """Send an email notification if a threatening message is detected."""
+    location_details = get_location()
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    subject = "⚠️ Threat Detected in Transcription"
+    body = (
+        f"A threatening message was detected:\n\n"
+        f"📝 **Transcription:** {transcription}\n\n"
+        f"📍 **Location Details:**\n{location_details}\n\n"
+        f"⏰ **Detection Time:** {timestamp}\n\n"
+        f"Please take appropriate action."
+    )
+    
+    msg = MIMEMultipart()
+    msg["From"] = EMAIL_SENDER
+    msg["To"] = EMAIL_RECEIVER
+    msg["Subject"] = subject
+    msg.attach(MIMEText(body, "plain"))
+
+    try:
+        server = smtplib.SMTP("smtp.gmail.com", 587)  # Use SMTP server of your email provider
+        server.starttls()
+        server.login(EMAIL_SENDER, EMAIL_PASSWORD)
+        server.sendmail(EMAIL_SENDER, EMAIL_RECEIVER, msg.as_string())
+        server.quit()
+        print("✅ Email sent successfully.")
+    except Exception as e:
+        print(f"❌ Error sending email: {e}")
 
 def convert_to_wav(audio_path, wav_path):
     """Convert MP3/WebM audio file to WAV."""
@@ -48,7 +101,11 @@ def predict_threat(text):
         text = re.sub(r'[^a-zA-Z0-9\s]', '', text.lower().strip())
         text_vectorized = vectorizer.transform([text])
         prediction = model.predict(text_vectorized)[0]
-        return "Threatening" if prediction == "Threat" else "Non-Threatening"
+        
+        if prediction == "Threat":
+            send_email(text)  # Send email if threat detected
+            return "Threatening"
+        return "Non-Threatening"
     except Exception as e:
         return f"Error in threat detection: {e}"
 
